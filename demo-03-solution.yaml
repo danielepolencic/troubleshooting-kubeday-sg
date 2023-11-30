@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo3
+spec:
+  selector:
+    matchLabels:
+      name: demo3
+  template:
+    metadata:
+      labels:
+        name: demo3
+    spec:
+      containers:
+        - name: demo3
+          image: nginx
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 500m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo3
+spec:
+  clusterIP: None
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    name: demo3
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo3
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - http:
+        paths:
+          - backend:
+              service:
+                name: demo3
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
